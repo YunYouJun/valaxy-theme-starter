@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Valaxy Theme Starter</title>
+        <link>https://starter.valaxy.site/</link>
+        <description>Valaxy Theme Starter Preview.</description>
+        <lastBuildDate>Thu, 21 Jul 2022 15:12:13 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <image>
+            <title>Valaxy Theme Starter</title>
+            <url>https://www.yunyoujun.cn/images/avatar.jpg</url>
+            <link>https://starter.valaxy.site/</link>
+        </image>
+        <copyright>CC BY-NC-SA 4.0 2022 © 云游君</copyright>
+        <atom:link href="https://starter.valaxy.site/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[i18n]]></title>
+            <link>https://starter.valaxy.site/posts/i18n</link>
+            <guid>https://starter.valaxy.site/posts/i18n</guid>
+            <pubDate>Thu, 21 Jul 2022 15:11:09 GMT</pubDate>
+            <content:encoded><![CDATA[<p>::: tip</p>
+<p>You can click this button to toggle locales.</p>
+<p>:::</p>
+<div class="text-center">
+  <!-- <YunToggleLocale class="shadow" /> -->
+</div>
+<p>::: zh-CN</p>
+<blockquote>
+<p>在一个页面中实现 i18n</p>
+</blockquote>
+<p>为了使 <a href="https://github.com/YunYouJun/valaxy">Valaxy</a> 成为一个国际化的项目，i18n 是必不可少的。</p>
+<p>常见的 i18n 方案为采用不同的路径（如 <code>/zh-CN/</code>）或解析不同的域名（<code>cn.xxx.xxx</code>）来分别维护。</p>
+<blockquote>
+<p>此外还可使用 <a href="https://crowdin.com/">crowdin</a> 平台辅助用户进行多语言翻译。</p>
+</blockquote>
+<p>但对于博客来说，这显然都很麻烦。<br>
+当你需要 i18n 时，你不得不同时维护多个目录下的文章。<br>
+当文章间存在相同的示例时，你还需要维护相同的内容。非常不优雅。</p>
+<p>Valaxy 中，<br>
+站点的独立字段部分（如文章目录：Table of Contents）基于 <a href="https://vue-i18n.intlify.dev/">vue-i18n</a> 实现，<br>
+而文章内容部分的大段文本则采用另一种 CSS i18n 的方案。</p>
+<p><a href="#result">我想先看看效果</a></p>
+<p>:::</p>
+<p>::: en</p>
+<blockquote>
+<p><strong>i18n in One Page</strong></p>
+</blockquote>
+<p>In order to make <a href="https://github.com/YunYouJun/valaxy">Valaxy</a> an international project, i18n is essential.</p>
+<p>Common i18n schemes are maintained separately using different paths (e.g. <code>/zh-CN/</code>) or resolving different domain names (<code>cn.xxx.xxx</code>).</p>
+<blockquote>
+<p>In addition, the <a href="https://crowdin.com/">crowdin</a> platform can be used to assist users with multilingual translations.</p>
+</blockquote>
+<p>But for blogs, this is obviously all a hassle.<br>
+When you need i18n, you have to maintain articles in multiple directories at the same time.<br>
+You also have to maintain the same content when the same examples exist between articles.<br>
+Very inelegant.</p>
+<p>In Valaxy, the<br>
+The standalone fields of the site (e.g. Table of Contents) are implemented based on <a href="https://vue-i18n.intlify.dev/">vue-i18n</a>.<br>
+The large text sections of the article content section use a different CSS i18n scheme.</p>
+<p><a href="#result">I want to see the result first.</a></p>
+<p>:::</p>
+<h2>Vue-i18n</h2>
+<p>::: zh-CN<br>
+配置 Vite Vue-i18n 插件 <a href="https://github.com/intlify/bundle-tools/tree/main/packages/vite-plugin-vue-i18n">@intlify/vite-plugin-vue-i18n</a>：<br>
+:::</p>
+<p>::: en<br>
+Config Vite Vue-i18n plugin <a href="https://github.com/intlify/bundle-tools/tree/main/packages/vite-plugin-vue-i18n">@intlify/vite-plugin-vue-i18n</a>：<br>
+:::</p>
+<pre><code class="language-ts">import path from 'path'
+import { defineConfig } from 'vite'
+import VueI18n from '@intlify/vite-plugin-vue-i18n'
+
+export default defineConfig({
+  plugins: [
+    VueI18n({
+      runtimeOnly: true,
+      compositionOnly: true,
+      include: [path.resolve(__dirname, 'locales/**')],
+    }),
+  ],
+})
+</code></pre>
+<p>::: zh-CN<br>
+在 <code>locales</code> 目录下配置 <code>zh-CN.yml</code> 与 <code>en.yml</code>：<br>
+:::</p>
+<p>::: en<br>
+Write <code>zh-CN.yml</code> and <code>en.yml</code> in <code>locales</code>.<br>
+:::</p>
+<pre><code class="language-yaml"># zh-CN.yml
+sidebar:
+  toc: 文章目录
+</code></pre>
+<pre><code class="language-yaml"># en.yml
+sidebar:
+  toc: Table of Contents
+</code></pre>
+<p>::: zh-CN<br>
+并在主入口文件（如 <code>main.ts</code>）中初始化：<br>
+:::</p>
+<p>::: en<br>
+and initialized in the main entry file (e.g. <code>main.ts</code>).<br>
+:::</p>
+<pre><code class="language-ts">import { createI18n } from 'vue-i18n'
+// import { createApp } from 'vue'
+// import App from './App.vue'
+
+/*
+ * All i18n resources specified in the plugin `include` option can be loaded
+ * at once using the import syntax
+ */
+import messages from '@intlify/vite-plugin-vue-i18n/messages'
+
+const i18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  messages,
+})
+
+// const app = createApp(App)
+app.use(i18n)
+</code></pre>
+<p>::: zh-CN<br>
+此时即可在 Vue 中使用 <code>t('')</code> 来翻译对应字段文本。<br>
+:::</p>
+<p>::: en<br>
+You can then use <code>t('')</code> in Vue to translate the text of the corresponding field.<br>
+:::</p>
+<pre><code class="language-vue">&lt;script lang=&quot;ts&quot; setup&gt;
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;h2&gt; {{ t(&quot;sidebar.toc&quot;) }} &lt;/h2&gt;
+&lt;/template&gt;
+</code></pre>
+<h3>Messages when SSG</h3>
+<p>::: zh-CN<br>
+<code>vue-i18n</code> 支持使用虚拟模块 <code>@intlify/vite-plugin-vue-i18n/messages</code> 的方式来导入多语言。</p>
+<p>可惜的是，它并没有完美地支持 SSR。<a href="https://github.com/intlify/bundle-tools/issues/78">#78 | intlify/bundle-tools</a></p>
+<p>而 Vite 的 <code>import.meta.globEager</code> 导入必须使用静态字符串。<br>
+:::</p>
+<p>::: en<br>
+<code>vue-i18n</code> supports importing multiple languages by using the virtual module <code>@intlify/vite-plugin-vue-i18n/messages</code>.</p>
+<p>Unfortunately, it doesn't support SSR perfectly.<a href="https://github.com/intlify/bundle-tools/issues/78">#78 | intlify/bundle-tools</a></p>
+<p>And Vite's <code>import.meta.globEager</code> import must use a static string.<br>
+:::</p>
+<pre><code class="language-ts">const messages = Object.fromEntries(
+  Object.entries(
+    import.meta.globEager('../../locales/*.y(a)?ml'))
+    .map(([key, value]) =&gt; {
+      const yaml = key.endsWith('.yaml')
+      return [key.slice(14, yaml ? -5 : -4), value.default]
+    }),
+)
+</code></pre>
+<p>::: zh-CN<br>
+当拥有确定目录时，它是奏效的，但 Valaxy 还需要将 Valaxy 自身的 <code>locales</code> 与主题的 <code>locales</code> 以及用户自定义的 <code>locales</code> 进行合并。<br>
+这意味着我们不能使用变量来拼接字符串进行导入，对于不同包管理器的目录结构不同，我们很难确定这些 <code>locales</code> 处于何处的相对位置。</p>
+<p>因此我采用插件虚拟模块（<code>@valaxyjs/locales</code>）的形式实现（依次导入各目录下的 locales 数据并合并）：</p>
+<blockquote>
+<p>Vite 虚拟模块的原理其实就是拼接字符串。<br>
+:::</p>
+</blockquote>
+<p>::: en<br>
+It works when there is a defined directory, but Valaxy also needs to merge Valaxy's own <code>locales</code> with the theme's <code>locales</code> and user-defined <code>locales</code>.<br>
+This means that we cannot use variables to splice strings for import, and it is difficult to determine the relative location of where these <code>locales</code> are for different package managers with different directory structures.</p>
+<p>So I implemented it in the form of a plugin virtual module (<code>@valaxyjs/locales</code>):</p>
+<blockquote>
+<p>The principle of the Vite virtual module is actually a spliced string.<br>
+:::</p>
+</blockquote>
+<pre><code class="language-ts">import type { Plugin } from 'vite'
+
+// import the locales data in each directory in turn and merge them
+function generateLocales(roots: string[]) {
+  const imports: string[] = [
+    'const messages = { &quot;zh-CN&quot;: {}, en: {} }',
+  ]
+  const languages = ['zh-CN', 'en']
+
+  roots.forEach((root, i) =&gt; {
+    languages.forEach((lang) =&gt; {
+      const langYml = `${root}/locales/${lang}.yml`
+      if (fs.existsSync(langYml) &amp;&amp; fs.readFileSync(langYml, 'utf-8')) {
+        const varName = lang.replace('-', '') + i
+        // in windows, you need to change slash
+        // more info you can refer 'packages/valaxy/src/node/plugins/index.ts'
+        imports.push(`import ${varName} from &quot;${langYml}&quot;`)
+        imports.push(`Object.assign(messages['${lang}'], ${varName})`)
+      }
+    })
+  })
+
+  imports.push('export default messages')
+  return imports.join('\n')
+}
+
+export function createValaxyPlugin(options: ResolvedValaxyOptions): Plugin {
+  // ...
+  const roots = [options.clientRoot, options.themeRoot, options.userRoot]
+
+  return {
+    name: 'Valaxy',
+
+    load(id) {
+      // ...
+      if (id === '/@valaxyjs/locales')
+        return generateLocales(roots)
+    },
+
+    async handleHotUpdate(ctx) {
+      // ...
+    },
+  }
+}
+</code></pre>
+<p>::: zh-CN<br>
+最后在 i18n 的初始化文件加载：<br>
+:::</p>
+<p>::: en<br>
+Finally load in the i18n initialization file:<br>
+:::</p>
+<pre><code class="language-ts">// i18n.ts
+import messages from '/@valaxyjs/locales'
+
+const i18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  messages,
+})
+app.use(i18n)
+</code></pre>
+<h2>CSS i18n - Another solution</h2>
+<p>::: zh-CN</p>
+<blockquote>
+<p>CSS i18n - 另一种互补解决方案<br>
+:::</p>
+</blockquote>
+<p>::: en</p>
+<blockquote>
+<p>CSS i18n - Another complementary solution<br>
+:::</p>
+</blockquote>
+<p>::: zh-CN<br>
+文章部分拥有大段的文本，而 <code>vue-i18n</code> 的场景则在于一些独立的字段翻译。</p>
+<p>而传统的分文件独立管理的方式，对于博客来说其实并不方便。<br>
+大多数情况，你并不会想专门建立一个文件夹来管理它。</p>
+<p>因此我尝试使用纯 CSS 解决该问题。<br>
+:::</p>
+<p>::: en<br>
+While the article section has large sections of text, the scenario of <code>vue-i18n</code> lies in some separate field translations.</p>
+<p>And the traditional way of managing them independently in separate files is not really convenient for blogs.<br>
+In most cases, you don't want to create a dedicated folder to manage it.</p>
+<p>So I tried to solve the problem using pure CSS.<br>
+:::</p>
+<div lang="zh-CN">
+<p>::: tip 思路<br>
+即借助 CSS 规则，根据对应语言，显示对应区块内容。<br>
+大体方案：通过 <a href="https://github.com/markdown-it/markdown-it-container">markdown-it-container</a> 设置 fence 预编译 Markdown，<br>
+为需要进行 i18n 的段落包裹新的 <code>&lt;div lang=&quot;zh-CN&quot;&gt;&lt;/div&gt;</code>，并使用 CSS 默认隐藏它们。<br>
+当页面初始化或切换语言时，为 html 添加对应语言类，编写对应 CSS 以在该类下显示对应语言的区块。<br>
+:::</p>
+</div>
+<div lang="en">
+<p>::: tip IDEA<br>
+That is, with the help of CSS rules, the content of the corresponding block is displayed according to the corresponding language.<br>
+The general solution: set fence to pre-compile Markdown via <a href="https://github.com/markdown-it/markdown-it-container">markdown-it-container</a>.<br>
+Wrap new <code>&lt;div lang=&quot;zh-CN&quot;&gt;&lt;/div&gt;</code>s for the paragraphs that need to be i18n and hide them by default with CSS.<br>
+When the page initializes or switches languages, add the corresponding language class to html and write the corresponding CSS to display the corresponding language block under that class.<br>
+:::</p>
+</div>
+<p>::: zh-CN<br>
+<strong>优势</strong>：</p>
+<ul>
+<li>可在同一个 Markdown 文件中进行维护，书写便捷</li>
+<li>预加载与实时切换</li>
+<li>URL 不变，便于管理与分享，且切换无需刷新页面</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>多语言内容被渲染在同一页面中，增加冗余（但我觉得这微小的体积完全是可以接受的）<br>
+:::</li>
+</ul>
+<p>::: en<br>
+<strong>Advantages</strong>:</p>
+<ul>
+<li>Can be maintained in the same Markdown file, easy to write</li>
+<li>Pre-loading and real-time switching</li>
+<li>URLs remain unchanged, easy to manage and share, and switch without refreshing the page</li>
+</ul>
+<p><strong>Disadvantages</strong>:</p>
+<ul>
+<li>Multi-language content is rendered in the same page, adding redundancy (but I think the tiny size is perfectly acceptable)<br>
+:::</li>
+</ul>
+<h3>Result</h3>
+<p>::: zh-CN<br>
+<strong>效果如下</strong>（点击按钮切换）：<br>
+:::</p>
+<p>::: en<br>
+<strong>The effect is as follows</strong> (click the button to switch).<br>
+:::</p>
+<!-- <YunToggleLocale class="shadow" /> -->
+<p>::: zh-CN<br>
+另一种 i18n 方案。</p>
+<blockquote>
+<p>更多内容：...<br>
+:::</p>
+</blockquote>
+<p>::: en<br>
+Another i18n method.</p>
+<blockquote>
+<p>More info...<br>
+:::</p>
+</blockquote>
+<p>::: zh-CN<br>
+中文<br>
+:::</p>
+<p>::: en<br>
+English<br>
+:::</p>
+<hr>
+<p>::: zh-CN<br>
+<strong>书写方式</strong>如下：<br>
+:::</p>
+<p>::: en<br>
+<strong>Written like this</strong>:<br>
+:::</p>
+<pre><code class="language-md">::: zh-CN
+另一种 i18n 方案。
+
+更多内容：...
+:::
+
+::: en
+Another i18n method.
+
+More info...
+:::
+
+::: zh-CN
+中文
+:::
+
+::: en
+English
+:::
+</code></pre>
+<h3>Steps</h3>
+<p>::: zh-CN<br>
+<strong>实现步骤</strong><br>
+:::</p>
+<p>::: zh-CN<br>
+为了能够借助 CSS 处理 i18n，我们借助 markdown-it-container 的 fence 包裹 Markdown 中需要参与 i18n 的内容。<br>
+:::</p>
+<p>::: en<br>
+To be able to handle i18n with CSS, we use markdown-it-container's fence to wrap Markdown content that needs to participate in i18n.<br>
+:::</p>
+<pre><code class="language-ts">export const containerPlugin = (md: MarkdownIt) =&gt; {
+  // ...
+  const languages = ['zh-CN', 'en']
+
+  languages.forEach((lang) =&gt; {
+    md.use(container, lang, {
+      render: (tokens: Token[], idx: number) =&gt;
+        tokens[idx].nesting === 1 ? `&lt;div lang=&quot;${lang}&quot;&gt;\n` : '&lt;/div&gt;\n',
+    })
+  })
+}
+</code></pre>
+<p>::: zh-CN<br>
+这可以使：<br>
+:::</p>
+<p>::: en<br>
+This allows:<br>
+:::</p>
+<pre><code class="language-md">::: zh-CN
+中文
+:::
+</code></pre>
+<p>::: zh-CN<br>
+变成 <code>&lt;div lang=&quot;zh-CN&quot;&gt;&lt;/div&gt;</code> 的形式。</p>
+<blockquote>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang">lang</a> 是 HTML 的一个标准字段。</p>
+</blockquote>
+<p>为避免 class 命名冲突，我们可以采用 CSS attribute 的查询方式。</p>
+<p>首先将 i18n 全部隐藏：<br>
+:::</p>
+<p>::: en<br>
+Be <code>&lt;div lang=&quot;zh-CN&quot;&gt;&lt;/div&gt;</code>.</p>
+<blockquote>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang">lang</a> is a standard field in HTML.</p>
+</blockquote>
+<p>To avoid class naming conflicts, we can use the CSS attribute query.</p>
+<p>First, hide all i18n:<br>
+:::</p>
+<pre><code class="language-scss">html[lang] {
+  .markdown-body {
+    div[lang] {
+      display: none;
+    }
+  }
+}
+</code></pre>
+<p>::: zh-CN<br>
+编写 CSS/SCSS 规则，设定 html <code>lang</code> 为对应语言时，显示对应语言的元素即可。<br>
+:::</p>
+<p>::: en<br>
+Write CSS/SCSS rules and set html <code>lang</code> to display elements in the corresponding language when it is the corresponding language.<br>
+:::</p>
+<pre><code class="language-scss">$languages: zh-CN, en;
+
+@each $lang in $languages {
+  html[lang=&quot;#{$lang}&quot;] {
+    // only for markdown
+    .markdown-body {
+      div[lang=&quot;#{$lang}&quot;] {
+        display: block;
+      }
+    }
+  }
+}
+</code></pre>
+<p>::: zh-CN<br>
+为了帮助用户记住自己的语言，还请不要忘记初始化。<br>
+:::</p>
+<p>::: en<br>
+To help users remember their language, please also don't forget to initialize.<br>
+:::</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot; class=&quot;i18n&quot;&gt;
+
+&lt;head&gt;
+  &lt;!-- ... --&gt;
+  &lt;script&gt;
+    (function() {
+      const locale = localStorage.getItem('valaxy-locale') || 'en'
+      document.documentElement.setAttribute('lang', locale)
+    })()
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>::: zh-CN<br>
+切换语言时则可做如下处理：<br>
+:::</p>
+<p>::: en<br>
+When switching languages, the following can be done.<br>
+:::</p>
+<pre><code class="language-ts">const toggleLocales = (lang: val) =&gt; {
+  // ...
+  // save locale
+  localStorage.setItem('valaxy-locale', lang)
+  // set html lang
+  document.documentElement.setAttribute('lang', lang)
+}
+</code></pre>
+<p>::: zh-CN<br>
+值得一提的是，在查看 <code>lang</code> 文档时，我意外地发现 <code>:lang</code> 也是一种支持的选择器。<br>
+因此上述的 CSS 中 <code>[lang=&quot;xxx&quot;]</code> 也可以替换为 <code>:lang(xxx)</code>。</p>
+<p>但是 <code>:lang()</code> 也会命中默认语言的 <code>div</code>（没有 lang 字段，但处于含有 lang 的标签中），因此为了安全，我们还是应该使用 class 的属性查询。<br>
+:::</p>
+<p>::: en<br>
+It's worth mentioning that when looking at the <code>lang</code> documentation, I accidentally found that <code>:lang</code> is also a supported selector.<br>
+So <code>[lang=&quot;xxx&quot;]</code> in the CSS above could also be replaced with <code>:lang(xxx)</code>.</p>
+<p>However, <code>:lang()</code> will also hit the default language <code>div</code> (which has no lang field but is in a tag containing lang), so to be safe we should still use the class attribute query.<br>
+:::</p>
+<p>::: zh-CN<br>
+我认为 vue-i18n 与 CSS i18n 的互补，可以非常好地解决单页内的 i18n 切换。<br>
+不妨一试？<br>
+:::</p>
+<p>::: en<br>
+I think vue-i18n complements CSS i18n and could be a very good solution for i18n switching within a single page.<br>
+Why not give it a try?<br>
+:::</p>
+]]></content:encoded>
+            <author>i@valaxy.site (云游君)</author>
+        </item>
+        <item>
+            <title><![CDATA[Valaxy Test 文章内容测试]]></title>
+            <link>https://starter.valaxy.site/posts/test</link>
+            <guid>https://starter.valaxy.site/posts/test</guid>
+            <pubDate>Thu, 21 Jul 2022 15:11:09 GMT</pubDate>
+            <content:encoded><![CDATA[<p>::: zh-CN</p>
+<p>[[toc]]</p>
+<p>标题是一级标题</p>
+<h2>二级标题 {lang=&quot;zh-CN&quot;}</h2>
+<h3>三级标题 {lang=&quot;zh-CN&quot;}</h3>
+<h4>四级标题 {lang=&quot;zh-CN&quot;}</h4>
+<h5>五级标题 {lang=&quot;zh-CN&quot;}</h5>
+<h6>六级标题 {lang=&quot;zh-CN&quot;}</h6>
+<h2>标题 {lang=&quot;zh-CN&quot;}</h2>
+<h2>列表测试 {lang=&quot;zh-CN&quot;}</h2>
+<ul>
+<li>AAA</li>
+<li>BBB</li>
+<li>CCC
+<ul>
+<li>DDD
+<ul>
+<li>EEE</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Checkbox</h3>
+<ul>
+<li>[ ] FLAG</li>
+<li>[x] FLAG<br>
+:::</li>
+</ul>
+<p>::: en<br>
+[[toc]]</p>
+<p>The title is a primary title</p>
+<h2>Secondary title {lang=&quot;en&quot;}</h2>
+<h3>Tertiary title {lang=&quot;en&quot;}</h3>
+<h4>Level four title {lang=&quot;en&quot;}</h4>
+<h5>Level five title {lang=&quot;en&quot;}</h5>
+<h6>Level six title {lang=&quot;en&quot;}</h6>
+<h2>Title {lang=&quot;en&quot;}</h2>
+<h2>List title {lang=&quot;en&quot;}</h2>
+<ul>
+<li>AAA</li>
+<li>BBB</li>
+<li>CCC
+<ul>
+<li>DDD
+<ul>
+<li>EEE</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Checkbox {lang=&quot;en&quot;}</h3>
+<ul>
+<li>[ ] FLAG</li>
+<li>[x] FLAG<br>
+:::</li>
+</ul>
+<p><img src="" alt=""><br>
+<em>a</em></p>
+]]></content:encoded>
+            <author>i@valaxy.site (云游君)</author>
+        </item>
+        <item>
+            <title><![CDATA[Hello, Valaxy!]]></title>
+            <link>https://starter.valaxy.site/posts/hello-valaxy</link>
+            <guid>https://starter.valaxy.site/posts/hello-valaxy</guid>
+            <pubDate>Wed, 23 Mar 2022 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<h2>Hello, Valaxy!</h2>
+<pre><code class="language-ts">import type { ThemeConfig } from 'valaxy-theme-starter'
+import { defineConfig } from 'valaxy'
+
+export default defineConfig&lt;ThemeConfig&gt;({
+  // your theme name
+  // valaxy-theme-yun name is 'yun'
+  theme: 'starter',
+
+  themeConfig: {
+    banner: {
+      enable: true,
+      title: '云游君的小站',
+    },
+  },
+})
+</code></pre>
+]]></content:encoded>
+            <author>i@valaxy.site (云游君)</author>
+        </item>
+    </channel>
+</rss>
